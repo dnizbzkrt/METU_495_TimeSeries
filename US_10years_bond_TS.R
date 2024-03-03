@@ -10,7 +10,7 @@ library(tseries)
 library(pdR)
 library(uroot)
 library(TSA)
-
+#Taken from https://www.investing.com/rates-bonds/u.s.-10-year-bond-yield
 df <- read.csv("10year.csv")
 
 autoplot(ts(df$Close,start = 1998,frequency = 12))+
@@ -21,7 +21,7 @@ test <- tail(df,36)
 test <-ts(test$Close, start = c(2023, 1), frequency = 12)
 train <- head(df, -36)
 train <- as_tibble(train)
-
+# Decompose time series data and detect anomalies
 train %>% 
   time_decompose(Close, method = "stl", frequency = "auto", trend = "auto") %>%
   anomalize(remainder, method = "gesd", alpha = 0.05, max_anoms = 0.2) %>%
@@ -36,6 +36,7 @@ train %>%
   anomalize(remainder) %>%
   time_recompose() %>%
   filter(anomaly == 'Yes')
+# Clean anomalies
 train <- train %>% 
   time_decompose(Close) %>%
   anomalize(remainder,alpha=0.05) %>%
